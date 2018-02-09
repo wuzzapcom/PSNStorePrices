@@ -23,8 +23,8 @@ repositories {
 }
 
 run {
-    if (project.hasProperty("appArgs")) {
-        args(appArgs)
+    if (project.hasProperty("token")) {
+        args(token)
     }
 }
 
