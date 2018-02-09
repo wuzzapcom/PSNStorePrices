@@ -22,6 +22,12 @@ repositories {
     mavenCentral()
 }
 
+run {
+    if (project.hasProperty("appArgs")) {
+        args(appArgs)
+    }
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
