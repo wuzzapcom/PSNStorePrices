@@ -71,20 +71,39 @@ class TelegramBot: TelegramLongPollingBot {
 
     private fun splitResponse(response: String): Array<String>{
         val result = ArrayList<String>()
-        val i = response.indexOf("\n30) ")
-        if (i == -1)
-            result.add(response)
-        else{
-            result.add(response.substring(0, i))
-            val j = response.indexOf("\n60) ")
-            if (j == -1)
-                result.add(response.substring(i))
-            else{
-                result.add(response.substring(i, j))
-                result.add(response.substring(j))
-            }
+        var numberOfStrings = 1
+        val numberOfStringsInMessage = 30
+        response.forEach { symbol ->
+            if (symbol == '\n')
+                numberOfStrings++
         }
-        return result.toTypedArray()
+        if (numberOfStrings / numberOfStringsInMessage > 1){
+            val numberOfMessages = numberOfStrings / numberOfStringsInMessage
+
+            var mess = ""
+            var currentNumberOfStringsInResult = 0
+            var numberOfCurrentSymbol = 0
+
+            for (i in 0..numberOfMessages){
+                while(
+                        currentNumberOfStringsInResult != numberOfStringsInMessage
+                        && numberOfCurrentSymbol < response.length - 1
+                ){
+
+                    mess += response[numberOfCurrentSymbol]
+                    numberOfCurrentSymbol++
+                    if (response[numberOfCurrentSymbol] == '\n')
+                        currentNumberOfStringsInResult++
+                }
+                result.add(mess)
+                mess = ""
+                currentNumberOfStringsInResult = 0
+            }
+            return result.toTypedArray()
+        }
+        else{
+            return arrayOf(response)
+        }
     }
 
     private fun send(msg: String, to: Message){
