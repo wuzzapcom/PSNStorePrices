@@ -76,8 +76,7 @@ class Model {
                     }
                     States.DELETE_GAME_STATE -> {
                         logNoStateActions(userID, message, state)
-                        currentState = States.DELETE_GAME_STATE
-                        Answers.WAIT_FOR_GAME_NAME_MESSAGE
+                        formDeleteRequestResponse(userID)
                     }
                     States.LIST_NOTIFICATION_GAMES -> {
                         logNoStateActions(userID, message, state)
@@ -125,6 +124,11 @@ class Model {
 
         val number = message.toIntOrNull() ?: return Answers.EXPECTED_INT_GOT_STRING
 
+        if (foundGames == null){
+            logger.log(Level.INFO, "foundGames is null, request aborted.")
+            return Answers.ERROR_MESSAGE
+        }
+
         if (number > foundGames!!.size || number < 1)
             return Answers.WRONG_NUMBER
 
@@ -151,39 +155,86 @@ class Model {
 
     private fun handleDeleteGameState(userID: Int, message: String): String{
         logSelectedState(userID, message)
+        if (message == NOTHING_ACTION){
+            currentState = States.NO_STATE
+            return Answers.FINISHED_MESSAGE
+        }
+
+        val number = message.toIntOrNull() ?: return Answers.EXPECTED_INT_GOT_STRING
+
+        if (foundGames == null){
+            logger.log(Level.INFO, "foundGames is null, request aborted.")
+            return Answers.ERROR_MESSAGE
+        }
+
+        if (number > foundGames!!.size || number < 1)
+            return Answers.WRONG_NUMBER
+
+        val game = foundGames!![number - 1]
+        foundGames = null
+
+        currentState = States.NO_STATE
+        return deleteNotificationFromDatabase(userID, game)
+
+    }
+
+    private fun formDeleteRequestResponse(userID: Int): String{
+        val list = getListOfUserGames(
+                userID,
+                true,
+                true
+        )
+        return if (list == Answers.NO_GAMES_MESSAGE){
+            Answers.DELETE_GAME_NO_GAMES
+        }
+        else{
+            currentState = States.DELETE_GAME_STATE
+            list + Answers.DELETE_GAME_LIST_MESSAGE
+        }
+    }
+
+    private fun deleteNotificationFromDatabase(forUser: Int, forGame: PSGame): String{
         var database: Database? = null
         try{
             database = Database()
-            val game = database.getGameByName(message)
-            if (game != null)
-                database.deleteNotification(userID, game.id)
+            database.deleteNotification(forUser, forGame.id)
         }catch(e: Exception){
             return Answers.ERROR_MESSAGE
         }
         finally {
             database?.close()
-            currentState = States.NO_STATE
         }
         return Answers.FINISHED_MESSAGE
     }
 
-    private fun getListOfUserGames(userID: Int, isLinesNumbered: Boolean = false): String{
+    private fun getListOfUserGames(userID: Int, isLinesNumbered: Boolean = false, isValuesStoredToFoundGames: Boolean = false): String{
         var result = ""
-        val db = Database()
 
         var numberOfGameInList = 1
 
-        db.getGamesList(userID).forEach {game ->
+        val games = getUserGames(userID)
+
+        if (isValuesStoredToFoundGames){
+            foundGames = games
+        }
+
+        games.forEach {game ->
             result += if (isLinesNumbered)
                 "${numberOfGameInList++}) $game\n"
             else
                 "$game\n"
         }
-        db.close()
         return if (result == "")
             Answers.NO_GAMES_MESSAGE
         else
             result
+    }
+
+    private fun getUserGames(userID: Int): Array<PSGame>{
+        val db = Database()
+        val res = db.getGamesList(userID)
+        db.close()
+        return res
     }
 
     private fun logSelectedState(userID: Int, message: String){
