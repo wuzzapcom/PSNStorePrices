@@ -13,7 +13,7 @@ fun startUpdater(){
     thread(start = true){
         while(true){
             Updater.tick()
-            Thread.sleep(1000*60)
+            Thread.sleep(1000*60*3)
         }
     }
 }

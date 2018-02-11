@@ -24,7 +24,7 @@ class PSNNetworking {
 
     public fun search(forName: String): Array<PSGame>{
 
-        val encodedGameTitle = URLEncoder.encode(forName, "UTF-8")
+        val encodedGameTitle = URLEncoder.encode(normalizeString(forName), "UTF-8")
 
         val searchRequestURL = URL("$urlRoot/bucket-search/$ruStore/$apiVersion/$encodedGameTitle?size=$fetchSize&start=0")
         logger.log(Level.INFO, "Created URL: $searchRequestURL")
@@ -102,5 +102,11 @@ class PSNNetworking {
                 salePrice = salePrice,
                 saleEnd = saleEnd
         )
+    }
+
+    private fun normalizeString(input: String): String{
+        input.replace("\\", "")
+        input.replace("/", "")
+        return input
     }
 }

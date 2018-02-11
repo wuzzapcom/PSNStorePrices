@@ -31,19 +31,32 @@ class Model {
         if (currentState == States.NO_STATE) {
             val arrayOfStates = States.values()
             for (state in arrayOfStates) {
-                logger.log(Level.INFO, "${state.name}(${state.command}). Message = $message, ${state.command.equals(message)}")
                 if (state.command.equals( message)){
-                    logger.log(Level.INFO, "found!")
                     return when(state){
                         States.SEARCH_GAME_WAIT_NAME_STATE -> {
+                            logger.log(
+                                    Level.INFO,
+                                    "Thread with user $userID.\nCurrent state: ${currentState.name}.\n" +
+                                            "Selected ${state.name}(${state.command}) with message = $message"
+                            )
                             currentState = States.SEARCH_GAME_WAIT_NAME_STATE
                             Answers.WAIT_FOR_GAME_NAME_MESSAGE
                         }
                         States.DELETE_GAME_STATE -> {
+                            logger.log(
+                                    Level.INFO,
+                                    "Thread with user $userID.\nCurrent state: ${currentState.name}.\n" +
+                                            "Selected ${state.name}(${state.command}) with message = $message"
+                            )
                             currentState = States.DELETE_GAME_STATE
                             Answers.WAIT_FOR_GAME_NAME_MESSAGE
                         }
                         States.LIST_NOTIFICATION_GAMES -> {
+                            logger.log(
+                                    Level.INFO,
+                                    "Thread with user $userID.\nCurrent state: ${currentState.name}.\n" +
+                                            "Selected ${state.name}(${state.command}) with message = $message"
+                            )
                             var result = ""
                             val db = Database()
                             db.getGamesList(userID).forEach {game ->
@@ -55,12 +68,23 @@ class Model {
                             else
                                 result
                         }
-                        else -> Answers.WRONG_MESSAGE_IN_CURRENT_STATE_MESSAGE
+                        else -> {
+                            logger.log(
+                                    Level.INFO,
+                                    "Thread with user $userID.\nCurrent state: ${currentState.name}.\n" +
+                                            "Selected ${state.name}(${state.command}) with message = $message"
+                            )
+                            Answers.WRONG_MESSAGE_IN_CURRENT_STATE_MESSAGE
+                        }
                     }
                 }
             }
         }
         else if (currentState == States.SEARCH_GAME_WAIT_NAME_STATE){
+            logger.log(
+                    Level.INFO,
+                    "Thread with user $userID.\nCurrent state: ${currentState.name} with message = $message"
+            )
             currentState = States.SEARCH_GAME_WAIT_NUMBER_STATE
             val psn = PSNNetworking()
             var result = ""
@@ -82,7 +106,10 @@ class Model {
             return result
         }
         else if (currentState == States.SEARCH_GAME_WAIT_NUMBER_STATE){
-
+            logger.log(
+                    Level.INFO,
+                    "Thread with user $userID.\nCurrent state: ${currentState.name} with message = $message"
+            )
             if (message == NOTHING_ACTION){
                 currentState = States.NO_STATE
                 return Answers.FINISHED_MESSAGE
@@ -100,7 +127,10 @@ class Model {
             return Answers.WAIT_ACTION
         }
         else if (currentState == States.SEARCH_GAME_WAIT_ACTION){
-
+            logger.log(
+                    Level.INFO,
+                    "Thread with user $userID.\nCurrent state: ${currentState.name} with message = $message"
+            )
             if (message != NOTIFY_ACTION && message != SHOW_ACTION && message != NOTHING_ACTION)
                 return Answers.WRONG_ACTION
 
@@ -117,6 +147,10 @@ class Model {
             }
         }
         else if (currentState == States.DELETE_GAME_STATE){
+            logger.log(
+                    Level.INFO,
+                    "Thread with user $userID.\nCurrent state: ${currentState.name} with message = $message"
+            )
             var database: Database? = null
             try{
                 database = Database()

@@ -37,9 +37,16 @@ class Updater {
                             )
                         }
                     }
-                    logger.log(Level.INFO, "${updatedGame.salePrice}, ${oldGame.salePrice}, ${oldGame.saleEnd}")
+                    logger.log(
+                            Level.INFO,
+                            "${updatedGame.salePrice}, ${oldGame.salePrice}, ${oldGame.saleEnd}"
+                    )
                     if (updatedGame.salePrice != oldGame.salePrice){
                         if (updatedGame.salePrice != null && updatedGame.saleEnd != null) {
+                            logger.log(
+                                    Level.INFO,
+                                    "update sale"
+                            )
                             database.update(
                                     id,
                                     updatedGame.salePrice,
@@ -59,6 +66,10 @@ class Updater {
                             }
                         }
                         else{
+                            logger.log(
+                                    Level.INFO,
+                                    "clean sale"
+                            )
                             database.cleanSale(id)
                             val message = Model.responseMessageForSaleFinished(
                                     updatedGame.name,

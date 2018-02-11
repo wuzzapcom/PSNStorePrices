@@ -107,7 +107,7 @@ class TelegramBot: TelegramLongPollingBot {
     }
 
     private fun send(msg: String, to: Message){
-        logger.log(Level.INFO, msg)
+        logger.log(Level.INFO, "Thread with user ${to.chatId}.\n Source message = ${to.text}.\n Answer = $msg")
 
         val messageSender = SendMessage()
         messageSender.chatId = to.chatId.toString()
