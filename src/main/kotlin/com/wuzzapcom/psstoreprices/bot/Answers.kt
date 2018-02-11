@@ -4,6 +4,7 @@ class Answers {
     companion object {
         const val WRONG_MESSAGE_IN_CURRENT_STATE_MESSAGE = "Неверный ввод"
         const val WAIT_FOR_GAME_NAME_MESSAGE = "Введите название игры"
+        const val FAILED_SEARCH_MESSAGE = "По всей видимости вы ввели некорректное название игры, ваш запрос сброшен."
         const val EXPECTED_INT_GOT_STRING = "Вы ввели не число, попробуйте еще раз"
         const val WRONG_NUMBER = "Вы ввели некорректное число, попробуйте еще раз"
         const val WAIT_ACTION = "Что вы хотите сделать: уведомлять о скидках(введите \"уведомлять\"), узнать текущую цену(введите \"посмотреть\") или не делать ничего(введите \"стоп\")."

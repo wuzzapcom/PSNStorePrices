@@ -109,6 +109,7 @@ class Model {
         }catch(e: Exception){
             e.printStackTrace()
             currentState = States.NO_STATE
+            return Answers.FAILED_SEARCH_MESSAGE
         }
 
         if (isExpansionsHidden){
