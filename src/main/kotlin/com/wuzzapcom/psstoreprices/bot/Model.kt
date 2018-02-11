@@ -52,6 +52,8 @@ class Model {
                 handleNoState(userID, message)
             States.SEARCH_GAME_WAIT_NAME_STATE ->
                 handleSearchGameWaitNameState(userID, message)
+            States.SEARCH_GAME_WAIT_NAME_NO_EXPANSIONS_STATE ->
+                handleSearchGameWaitNameState(userID, message, true)
             States.SEARCH_GAME_WAIT_NUMBER_STATE ->
                 handleSearchGameWaitNumberState(userID, message)
             States.SEARCH_GAME_WAIT_ACTION ->
@@ -74,6 +76,11 @@ class Model {
                         currentState = States.SEARCH_GAME_WAIT_NAME_STATE
                         Answers.WAIT_FOR_GAME_NAME_MESSAGE
                     }
+                    States.SEARCH_GAME_WAIT_NAME_NO_EXPANSIONS_STATE ->{
+                        logNoStateActions(userID, message, state)
+                        currentState = States.SEARCH_GAME_WAIT_NAME_NO_EXPANSIONS_STATE
+                        Answers.WAIT_FOR_GAME_NAME_MESSAGE
+                    }
                     States.DELETE_GAME_STATE -> {
                         logNoStateActions(userID, message, state)
                         formDeleteRequestResponse(userID)
@@ -92,7 +99,7 @@ class Model {
         return Answers.WRONG_MESSAGE_IN_CURRENT_STATE_MESSAGE
     }
 
-    private fun handleSearchGameWaitNameState(userID: Int, message: String): String{
+    private fun handleSearchGameWaitNameState(userID: Int, message: String, isExpansionsHidden: Boolean = false): String{
         logSelectedState(userID, message)
         currentState = States.SEARCH_GAME_WAIT_NUMBER_STATE
         val psn = PSNNetworking()
@@ -102,6 +109,14 @@ class Model {
         }catch(e: Exception){
             e.printStackTrace()
             currentState = States.NO_STATE
+        }
+
+        if (isExpansionsHidden){
+            foundGames = foundGames!!.filterNot { game ->
+                game.contentType == PSGame.CONTENT_TYPE_EXPANSION ||
+                        game.contentType == PSGame.CONTENT_TYPE_LEVEL ||
+                        game.contentType == ""
+            }.toTypedArray()
         }
 
         for ((index, game) in foundGames!!.withIndex()) {

@@ -12,6 +12,12 @@ data class PSGame(
         val salePrice: Int? = null,
         val saleEnd: LocalDate? = null
 ) {
+
+    companion object {
+        const val CONTENT_TYPE_EXPANSION = "Дополнение"
+        const val CONTENT_TYPE_LEVEL = "Уровень"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
