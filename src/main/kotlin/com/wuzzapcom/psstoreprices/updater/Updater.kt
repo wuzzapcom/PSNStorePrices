@@ -27,8 +27,8 @@ class Updater {
                         database.update(id, updatedGame.price)
                         val message = Model.responseMessageForUpdatePrice(
                                 updatedGame.name,
-                                updatedGame.price,
-                                oldGame.price
+                                updatedGame.price / 100,
+                                oldGame.price / 100
                         )
                         database.getUsers(id).forEach {userID ->
                             TelegramBot.sendSingleMessage(
@@ -54,8 +54,8 @@ class Updater {
                             )
                             val message = Model.responseMessageForSaleStart(
                                     updatedGame.name,
-                                    updatedGame.price,
-                                    oldGame.price,
+                                    updatedGame.price / 100,
+                                    oldGame.price / 100,
                                     updatedGame.saleEnd.toString()
                             )
                             database.getUsers(id).forEach {userID ->
@@ -73,7 +73,7 @@ class Updater {
                             database.cleanSale(id)
                             val message = Model.responseMessageForSaleFinished(
                                     updatedGame.name,
-                                    updatedGame.price
+                                    updatedGame.price / 100
                             )
                             database.getUsers(id).forEach {userID ->
                                 TelegramBot.sendSingleMessage(
